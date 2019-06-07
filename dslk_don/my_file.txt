@@ -1,20 +1,59 @@
-1. TP Ho Chi Minh la dia danh cua nuoc nao? (Viet Nam / Campuchia / Lao)
-Viet Nam
-2. Ban do Viet Nam co hinh dang gi? (Con rong / Chu S / Chu H)
-Chu S
-3. Tinh den nam 2019, Viet Nam co bao nhieu tinh thanh tren ca nuoc? (67 / 65 / 64)
-64
-4. Ngay 1/6 la ngay ki niem gi tren the gioi? (QT thieu nhi / QT nguoi gia / QT phu nu)
-QT thieu nhi
-5. Luc toi 5 tuoi em gai bang 1 nua tuoi toi, nam nay toi 23 tuoi hoi tuoi em gai toi bao nhieu? (11.5 / 19.5 / 20.5)
-20.5
-6. 1 kg sat va 1 kg bong cai nao nang hon? (sat / bong / Bang nhau)
-Bang Nhau
-7. Quoc gia nao da vo dich giai bong da AFF cup 2018? (Viet Nam / Ustraylia / Trung Quoc)
-Viet Nam
-8. Ca khuc XA DAU MAT TROI do ai sang tac? (Trinh Cong Son / Ngo Thuy Mien / Khanh Ly)
-Trinh Cong Son
-9. Quan Trung va Nguyen Hue co quan he gi? (Anh em / Ban chien dau / Cung la ten 1 nguoi) 
-Cung la ten 1 nguoi
-10. Ai la nguoi dau tien bay vao vu tru? (Nguyen Tuan / Gagarin / Comlombus)
-Gagarin
+1. TP Ho Chi Minh la dia danh cua nuoc nao?
+a. Viet Nam
+b. Thai Lan
+c. Lao
+d. Campuchia
+======================================================================================================
+2. Ban do Viet Nam co hinh dang gi?
+a. Chu S
+b. Chu H
+c. Chu L
+d. Chu I
+======================================================================================================
+3. Tinh den nam 2019, Viet Nam co bao nhieu tinh thanh tren ca nuoc?
+a. 64
+b. 65
+c. 66
+d. 67
+======================================================================================================
+4. Ngay 1/6 la ngay ki niem gi tren the gioi?
+a. QT phu nu
+b. QT thieu nhi
+c. QT nguoi cao tuoi
+d. Thuong binh liet si
+======================================================================================================
+5. Luc toi 5 tuoi em gai bang 1 nua tuoi toi, nam nay toi 23 tuoi hoi tuoi em gai toi bao nhieu?
+a. 11.5
+b. 15.5
+c. 20.5
+d. 21.5
+======================================================================================================
+6. 1 kg sat va 1 kg bong cai nao nang hon?
+a. Bang Nhau
+b. Sat
+c. Bong
+d. Tat ca deu dung
+======================================================================================================
+7. Quoc gia nao da vo dich giai bong da AFF cup 2018?
+a. Viet Nam
+b. Australya
+c. Trung Quoc
+d. Philiphin
+======================================================================================================
+8. Ca khuc XA DAU MAT TROI do ai sang tac?
+a. Nguyen Minh Thang
+b. Ngo Thuy Mien
+c. Ta Minh Tam
+d. Trinh Cong Son
+======================================================================================================
+9. Quan Trung va Nguyen Hue co quan he gi? 
+a. Cung la ten 1 nguoi
+b. Anh em cung cha khac me
+c. Ban chien dau
+d. Anh em cung me khac cha
+======================================================================================================
+10. Ai la nguoi dau tien bay vao vu tru?
+a. Nguyen Tuan
+b. Colombus
+c. Gagarin
+d. Ronandol

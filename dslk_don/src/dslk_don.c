@@ -9,7 +9,10 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <errno.h>
+#include <time.h>
 #define FILENAME "my_file.txt"
+#define FILE_ANSER "dap_an.txt"
+
 char NickName[5][50];
 char *str;
 struct sockaddr_in serverAddress;
@@ -46,12 +49,12 @@ int CheckUserName(char *Name){
 
 //================================================================
 //READ FILE
-char *FileData (int Line){
+char *FileData (int Line, char *t){
   int i;
   char *StrBuff = NULL;
   size_t StrBuffSize = 0;
   ssize_t LineSize;
-  FILE *fp = fopen(FILENAME, "r");
+  FILE *fp = fopen(t, "r");
   for(i=1;i<=Line;i++){
       LineSize =getline(&StrBuff, &StrBuffSize, fp);
   }
@@ -69,7 +72,6 @@ void ClearClient(){
 }
 
 int main(){
-    int check=0;
     InitListUser();
     struct sockaddr_in addresServer;
     struct sockaddr_in addressClient;
@@ -95,7 +97,7 @@ int main(){
     }
     memset(&addresServer, '\0', sizeof(addresServer));
 
-    addresServer.sin_port=htons(5000);
+    addresServer.sin_port=htons(5001);
     addresServer.sin_family=AF_INET;
     inet_aton("192.168.81.12", &addresServer.sin_addr.s_addr);
 
@@ -119,8 +121,11 @@ int main(){
     }
 
     int i;
+    int check123=0;
     ClearClient();
+
     while(1){
+    while(check123<2){
 
         FD_ZERO(&listSocket);
         FD_SET(valueOfSocket, &listSocket);
@@ -157,12 +162,11 @@ int main(){
                     str=(char*)malloc(sizeof(char)*100);
                     memset(str, '\0', 100);
                     recv(valueOfAccept, nickname, sizeof(nickname), 0);
-                    CheckUserName(nickname);
                 }
 
                 while (CheckUserName(nickname)){
                     memset(str, '\0', 100);
-                    str="Input username again:";
+                    str="User Name is exits please input user name again!:";
                     send(valueOfAccept, str, strlen(str), 0);
 
                     select(valueOfAccept+1, &listSocket, NULL, NULL, NULL);
@@ -170,21 +174,20 @@ int main(){
                     if(FD_ISSET(valueOfAccept, &listSocket)){
                         memset(nickname, '\0', 30);
                         recv(valueOfAccept,nickname, sizeof(nickname), 0);
-                        puts(nickname);
                     }
                 }
 
                 memset(str, '\0', 100);
-                str="Register Successfully";
+                str="Register Successfully, please wait until full player!";
                 send(valueOfAccept, str, strlen(str), 0);
 
 
                 for (int j=0; j<sizeMaxClient; j++){
                     if (client[j]==0){
-                        printf("ssssss");
                         client[j]=valueOfAccept;
                         strcpy(listUser[j].Name, nickname);
                         puts(listUser[j].Name);
+                        check123++;
                         break;
                     }
 
@@ -200,6 +203,51 @@ int main(){
 
     }
 
+    for(int i=0; i<check123; i++){
+        str="START GAME!\n";
+        char *str1="SO NGUOI CHOI: 3\n";
+        char *str2="LUOT CHOI CUA BAN:\n";
+        char *str3="TOTAL QUESTIONS: 10\n";
+        send(client[i], str, strlen(str), 0);
+        send(client[i], str1, strlen(str1), 0);
+        send(client[i], str2, strlen(str2), 0);
+        send(client[i], str3, strlen(str3), 0);
+
+    }
+
+
+    char Answer[5];
+    memset(Answer, '\0', sizeof(Answer));
+    for(int j=0; j< check123; j++){
+        for(int k=1; k<=6; k++){
+            send(client[j], FileData(k, FILENAME), strlen(FileData(k, FILENAME)), 0);
+
+        }
+        int LineAnswer=1;
+        recv(client[j], Answer, 1, 0);
+//        puts(Answer);
+        if(strcmp(Answer,FileData(LineAnswer, FILE_ANSER))==0){
+            str="exactly! please wait other player's answer................";
+            send(client[j], str, strlen(str), 0);
+        }
+
+//        if(Answer == FileData(j+1, FILE_ANSER)){
+//            memset(str, '\0', sizeof(str));
+//            str="exactly! please wait other player's answer................";
+//            send(client[j], str, strlen(str), 0);
+//        }
+////        else{
+////            memset(str, '\0', sizeof(str));
+////            str="Wrong! You are failed";
+////            send(client[j], str, strlen(str), 0);
+////            close(client[j]);
+////        }
+////
+
+    }
+
+
+}
     valueOfShutdown=shutdown(valueOfSocket, SHUT_RDWR);
 
     if (valueOfShutdown==0){
