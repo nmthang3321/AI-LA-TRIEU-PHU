@@ -35,12 +35,11 @@ struct InformationUser{
 };
 
 struct InformationUser UserPlayer[5];
-
 void InitUserPlayer(){
     int i;
     for(i=0; i<MaximumPlayer; i++ ){
         memset(UserPlayer[i].Name, '\0', sizeof(UserPlayer[i].Name));
-        UserPlayer[i].Check=0;
+        UserPlayer[i].Check=1;
         UserPlayer[i].Socket=0;
         UserPlayer[i].Next=0;
     }
@@ -60,17 +59,17 @@ int CheckUserName(char UserName[20]){
 
 //========================================================
 // Reading file return pharse with line 
-char *FileData (int Line, char *File){
+char * FileData (int Line, char *File){
   int i;
   char *StrBuff = NULL;
   size_t StrBuffSize = 0;
   ssize_t LineSize;
-  FILE *fp = fopen(*File, "r");
+  FILE *fp = fopen(File, "r");
   for(i=1;i<=Line;i++){
       LineSize =getline(&StrBuff, &StrBuffSize, fp);
   }
   fclose(fp);
-  return (StrBuff);
+  return StrBuff;
 }
 
 //=======================================================
@@ -93,7 +92,9 @@ int CheckSpecialCharacter(char UserName[20]){
 //Checking Player's anwser true or false
 
 int CheckAnswer(char Answer[20], int Line){
-    if(strcmp(Answer, FileData(Line, FileAnswer))==0){
+    char ReadFile[20];
+    strcpy(ReadFile, FileData(Line, FileAnswer));
+    if(ReadFile[0]==Answer[0]){
         return 1;
     }
     return 0;
@@ -106,23 +107,19 @@ int main(){
     int valueOfSocket;
     int valueOfBind;
     int valueOfListen;
-
     valueOfSocket=socket(AF_INET, SOCK_STREAM, 0);
     if (valueOfSocket<0){
-
-        printf("Error create server\n");
+       printf("Error create server\n");
         return -1;
         exit(0);
     }
     else{
         printf("Create server successful\n");
     }
-
     memset(&addresServer, '\0', sizeof(addresServer));
-    addresServer.sin_port=htons(5001);
+    addresServer.sin_port=htons(5000);
     addresServer.sin_family=AF_INET;
-    inet_aton("127.0.0.1", &addresServer.sin_addr.s_addr);
-
+    inet_aton("192.168.81.12", &addresServer.sin_addr.s_addr);
     valueOfBind=bind(valueOfSocket,(struct sockaddr*)&addresServer, sizeof(addresServer));
     if (valueOfBind==0){
         printf("Bind is successful\n");
@@ -132,7 +129,6 @@ int main(){
         return -1;
         exit(0);
     }
-
     valueOfListen=listen(valueOfSocket, 3);
     if (valueOfListen==0){
         printf("Listening...\n");
@@ -142,7 +138,6 @@ int main(){
         return -1;
         exit(0);
     }
-
     struct sockaddr_in addressClient;
     socklen_t addressClient_Len;
     int valueOfAccept;
@@ -153,16 +148,12 @@ int main(){
 
     while(1){ 
         while(CountPlayer < MaximumPlayer){
-
             FD_ZERO(&listSocket);
             FD_SET(valueOfSocket, &listSocket);
             int maxlength= valueOfSocket;
-
             select(maxlength+1, &listSocket, NULL, NULL, NULL);
-
             if(FD_ISSET(valueOfSocket, &listSocket)){               //Catch even connect from server
-
-                addressClient_Len=sizeof(struct sockaddr_in);
+                addressClient_Len= sizeof(struct sockaddr_in);
                 valueOfAccept=accept(valueOfSocket, (struct sockaddr*)&addressClient, &addressClient_Len);
                 if(valueOfAccept< 0){
                     perror("ACCEPT: ");
@@ -170,41 +161,32 @@ int main(){
                     exit(0);
                 }
                 if(valueOfAccept>0){
-
                     FD_SET(valueOfAccept, &listSocket);             
                     char RequestInput[]= "Input User Name";
-                    send(valueOfAccept, RequestInput, strlen(RequestInput), 0);                    
+                    send(valueOfAccept, RequestInput, strlen(RequestInput), 0);            
                     select(valueOfAccept+1, &listSocket, NULL, NULL, NULL);
-
                     if(FD_ISSET(valueOfAccept, &listSocket)){               //waiting feedback from client
-
                         memset(Message, '\0', sizeof(Message));
                         recv(valueOfAccept, Message, sizeof(Message), 0);
                     }
                     
-                    while(CheckUserName(Message) || CheckSpecialCharacter(Message)){     //Checking User Name and check special character
-                
-                        if(CheckUserName(Message)==1){                        
+                     while(CheckUserName(Message) || CheckSpecialCharacter(Message)){ //Checking User Name and 
+                        if(CheckUserName(Message)==1){                       
                             char InputAgain[]= "User name is EXITS, please input other name: ";
                             send(valueOfAccept, InputAgain, strlen(InputAgain), 0);
                         }
-
                         if(CheckSpecialCharacter(Message)==1){
                             char SpecialCharacter[]= "User name error, only input character A->Z and a->z. Please input again: ";
                             send(valueOfAccept, SpecialCharacter, strlen(SpecialCharacter), 0);
-                        }
+                        }                       
                         select(valueOfAccept+1, &listSocket, NULL, NULL, NULL); 
-
                         if(FD_ISSET(valueOfAccept, &listSocket)){
                            memset(Message, '\0', sizeof(Message));
                            recv(valueOfAccept, Message, sizeof(Message), 0);
                         }
-                    }
-                    
-                
+                    }                                
                     for(int i=0; i< MaximumPlayer; i++ ){       //Receving notify register sucessfully
                         if(UserPlayer[i].Socket==0){
-
                             UserPlayer[i].Socket= valueOfAccept;
                             strcpy(UserPlayer[i].Name, Message);
                             printf("There is a new player form IP: %s\n",inet_ntoa(addressClient.sin_addr));  
@@ -223,7 +205,7 @@ int main(){
         }
         FD_ZERO(&listSocket);
         for(int i=0; i< MaximumPlayer; i++){        // Receving information game to all client
-            char Start[]= "============ START =============\n";
+            char Start[]= "\n============ START =============\n";
             char Total[]= "Sum Of Player Game:\n";
             char TotalQuestion[]= "Total Question: 10\n";
             char YourTurn[]= "Your Turn: \n";
@@ -231,56 +213,64 @@ int main(){
             send(UserPlayer[i].Socket, Total, strlen(Total), 0);
             send(UserPlayer[i].Socket, TotalQuestion, strlen(TotalQuestion), 0);
             send(UserPlayer[i].Socket, YourTurn, strlen(YourTurn), 0);
+            puts(UserPlayer[i].Name);
             if(UserPlayer[i].Socket != 0){
                 FD_SET(UserPlayer[i].Socket, &listSocket);
             }
         }
-    
-        for(int i=0; i< MaximumPlayer; i++){
-            for(int Line= 1; Line<= 6; Line++){
-
-                char *Question= FileData(Line, FileQuestion);
-                send(UserPlayer[i].Socket, Question, strlen(Question), 0);
-            }
-            select(UserPlayer[i].Socket+1, &listSocket, NULL, NULL, NULL);      // Waiting answer form client
-            if(FD_ISSET(UserPlayer[i].Socket, &listSocket)){
-                
-                memset(Message, '\0', sizeof(Message));
-                recv(UserPlayer[i].Socket,  Message,  sizeof(Message), 0);
-            }
-            printf("%d", UserPlayer[i].Socket); 
-        }     
-        
-/*        int LineMin= 1;
+        int LineMin= 1;
         int LineMax= 6;
-        int CountQuestion= 0;
-
-        while(CountQuestion<= 10){
+        int CountQuestion= 1;
+        while(CountQuestion<=10){
             int i=0;
             for(i=0; i< MaximumPlayer; i++){
-                for(int Line= LineMin; Line<= LineMax; Line++){
-
-                    char *Question= FileData(Line, FileQuestion);
-                  send(UserPlayer[i].Socket, Question, strlen(Question), 0);
+                for(int j= LineMin; j<= LineMax; j++){
+                    send(UserPlayer[i].Socket, FileData(j, FileQuestion), strlen(FileData(j, FileQuestion)), 0);
                 }
-                
-                select(UserPlayer[i].Socket+1, &listSocket, NULL, NULL, NULL);      // Waiting answer form client
+                if(UserPlayer[i].Next==0){
+                    char Note[]= "Are you next this question? (Y)";
+                    send(UserPlayer[i].Socket, Note, strlen(Note), 0);
+                }
                 if(FD_ISSET(UserPlayer[i].Socket, &listSocket)){
-                    
-                    printf("ok");
-                    memset(Message, '\0', sizeof(Message));
-                    recv(UserPlayer[i].Socket,  Message,  sizeof(Message), 0);
-                    char ok[]="ok";
-                    send(UserPlayer[i].Socket,  ok,  strlen(ok), 0);
+                    memset(Message, '\0', sizeof(Message));          
+                    recv(UserPlayer[i].Socket, Message, sizeof(Message), 0);
+                    if(strcmp( "Y", Message)== 0){
+                        char Next[]= "You are choice next, please wait the nex question...\n";
+                        send( UserPlayer[i].Socket, Next, strlen(Next), 0);
+                        UserPlayer[i].Next= 1;
+                    }
+                    else{
+                        if(CheckAnswer(Message, CountQuestion)== 1){
+                            char Correct[]= "Exactly! Please wait the next question...\n";
+                            send(UserPlayer[i].Socket, Correct, strlen(Correct), 0);
+                        }
+                        else{
+                            char InCorrect[]= "Wrong! You are fail. Good bye!";
+                            send( UserPlayer[i].Socket, InCorrect, strlen(InCorrect), 0);
+                            UserPlayer[i].Check= 0;
+                            close(UserPlayer[i].Socket);
+                        }
+                        puts(Message);
+                    }
                 }
-                puts(Message);
-                printf("%d", CheckAnswer(Message, 1));
+                int PlayerWin= 0;
+                int CountWin= 0;
+                for(int i=0; i<MaximumPlayer; i++){
+                    if(UserPlayer[i].Check==1 && CountWin==1){
+                        PlayerWin= i;
+                        CountWin++;
+                    }
+                }
+                char NotifyWin[]= "Other Players is not passed, you win! CONGRATULATION";
+                send(UserPlayer[PlayerWin].Socket, NotifyWin, strlen(NotifyWin), 0);
+                
             }
-            LineMin+= 6;  LineMax+= 6;
+            LineMin+=6; 
+            LineMax+=6;
             CountQuestion++;
-        }*/
+        }
+
     }
         
         return 0;
 }
-
