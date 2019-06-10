@@ -114,15 +114,15 @@ int main(){
         exit(0);
     }
     else{
-        printf("Create server successful\n");
+        printf("============Wellcom to WHO IS THE MILIONARE GAME================\n");
     }
     memset(&addresServer, '\0', sizeof(addresServer));
     addresServer.sin_port=htons(5000);
     addresServer.sin_family=AF_INET;
-    inet_aton("192.168.81.12", &addresServer.sin_addr.s_addr);
+    inet_aton("192.168.1.219", &addresServer.sin_addr.s_addr);
     valueOfBind=bind(valueOfSocket,(struct sockaddr*)&addresServer, sizeof(addresServer));
     if (valueOfBind==0){
-        printf("Bind is successful\n");
+        printf(">> Designed by THANG NGUYEN\n");
     }
     else {
         perror("BIND: \n");
@@ -131,7 +131,7 @@ int main(){
     }
     valueOfListen=listen(valueOfSocket, 3);
     if (valueOfListen==0){
-        printf("Listening...\n");
+        printf(">> Waiting Player connect to server..............\n");
     }
     else {
         printf("false\n");
@@ -209,11 +209,12 @@ int main(){
             char Total[]= "Sum Of Player Game:\n";
             char TotalQuestion[]= "Total Question: 10\n";
             char YourTurn[]= "Your Turn: \n";
+            char Wait[]="Please wait the questions apperance..........";
             send(UserPlayer[i].Socket, Start, strlen(Start), 0);
             send(UserPlayer[i].Socket, Total, strlen(Total), 0);
             send(UserPlayer[i].Socket, TotalQuestion, strlen(TotalQuestion), 0);
             send(UserPlayer[i].Socket, YourTurn, strlen(YourTurn), 0);
-            puts(UserPlayer[i].Name);
+            send(UserPlayer[i].Socket, Wait, strlen(Wait), 0);
             if(UserPlayer[i].Socket != 0){
                 FD_SET(UserPlayer[i].Socket, &listSocket);
             }
@@ -250,20 +251,21 @@ int main(){
                             UserPlayer[i].Check= 0;
                             close(UserPlayer[i].Socket);
                         }
-                        puts(Message);
                     }
                 }
                 int PlayerWin= 0;
                 int CountWin= 0;
                 for(int i=0; i<MaximumPlayer; i++){
-                    if(UserPlayer[i].Check==1 && CountWin==1){
+                    if(UserPlayer[i].Check==1){
                         PlayerWin= i;
                         CountWin++;
                     }
                 }
-                char NotifyWin[]= "Other Players is not passed, you win! CONGRATULATION";
-                send(UserPlayer[PlayerWin].Socket, NotifyWin, strlen(NotifyWin), 0);
-                
+                if(CountWin==1){
+                    char NotifyWin[]= "You win! CONGRATULATE";
+                    send(UserPlayer[PlayerWin].Socket, NotifyWin, strlen(NotifyWin), 0);
+                    exit(0);
+                }
             }
             LineMin+=6; 
             LineMax+=6;
